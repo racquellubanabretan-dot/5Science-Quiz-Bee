@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAAL Grade 5 Science Quiz Bee</title>
+<script src="data/questions.js"></script>
+<script src="data/access.js"></script>
+<style>
+:root{--bg:#f4f8fb;--card:#fff;--ink:#17324d;--muted:#607487;--line:#d9e3ec;--blue:#1f6feb;--green:#16834b;--red:#c73b3b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:980px;margin:auto;padding:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 6px 22px rgba(20,50,80,.06);margin-bottom:16px}
+h1,h2{margin-top:0}.brand{text-align:center;padding:22px}.brand h1{margin-bottom:5px}.brand p{color:var(--muted);margin:0}
+.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label.small,.small{font-size:.88rem;color:var(--muted)}select,input{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;font:inherit;color:var(--ink)}
+.btn{border:0;border-radius:12px;padding:13px 17px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer}.btn.secondary{background:#eaf2ff;color:#1456ad}.btn.danger{background:#fff0f0;color:var(--red)}
+.code-row{display:flex;gap:9px}.code-row input{flex:1;text-transform:uppercase}.error{color:var(--red);font-weight:700;margin-top:8px}
+.topic-box{margin-top:16px;padding:15px;border:1px solid var(--line);border-radius:16px;background:#f8fbff}
+.topic-btn{width:100%;margin-top:7px;text-align:left;padding:14px 16px;border:2px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);font-weight:800;cursor:pointer}
+.selected-topic{margin-top:8px;font-weight:800;color:var(--blue)}
+.topic-panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.topic-panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+.close-btn{border:0;background:#eef2f7;border-radius:10px;width:36px;height:36px;font-size:24px;line-height:1;cursor:pointer;color:var(--ink)}
+.topic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.topic-choice{border:2px solid var(--line);background:#fff;border-radius:12px;padding:11px;text-align:left;cursor:pointer;font-weight:750;color:var(--ink)}
+.topic-choice.active{border-color:var(--blue);background:#eef5ff;color:#1d4ed8}
+.topic-count{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-top:3px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.progress{height:9px;background:#e8eef4;border-radius:99px;overflow:hidden}.progress>div{height:100%;background:var(--blue);width:0}
+.choices{display:grid;gap:10px;margin-top:18px}.choice{width:100%;padding:14px;border:2px solid var(--line);background:#fff;border-radius:13px;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}
+.choice:hover{border-color:#8db3e6}.choice.correct{border-color:var(--green);background:#eaf8f0}.choice.wrong{border-color:var(--red);background:#fff0f0}
+.rationale{margin-top:15px;padding:13px;border-radius:12px;background:#f4f8fb;border-left:4px solid var(--blue)}
+.score{text-align:center;font-size:3rem;font-weight:900;color:var(--blue)}.review{padding:14px 0;border-top:1px solid var(--line)}
+.timer{font-weight:900}.pill{display:inline-block;padding:5px 9px;border-radius:99px;background:#edf4ff;color:#1557ad;font-size:.8rem;font-weight:800}
+@media(max-width:700px){.grid,.topic-list{grid-template-columns:1fr}.wrap{padding:10px}.card{padding:17px}.code-row{flex-direction:column}.topbar{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card brand">
+    <h1>🔬 RAAL Grade 5 Science Quiz Bee</h1>
+    <p>600 audited questions • BOW-aligned • Practice & Quiz Bee modes</p>
+  </div>
+
+  <section id="login" class="card">
+    <h2>🔐 Enter Access Code</h2>
+    <p class="small">Enter the access code provided with your RAAL Grade 5 Science Quiz Bee purchase.</p>
+    <div class="code-row">
+      <input id="accessInput" maxlength="30" placeholder="Enter access code">
+      <button id="unlock" class="btn">Unlock Game</button>
+    </div>
+    <div id="loginError" class="error"></div>
+  </section>
+
+  <section id="menu" class="card hidden">
+    <h2>Choose Your Review</h2>
+    <div class="grid">
+      <div><label class="small">Mode</label><select id="mode"><option value="practice">Practice — instant feedback</option><option value="quiz">Quiz Bee — results at the end</option><option value="marathon">🏃 Marathon — all 600 questions</option></select></div>
+      <div><label class="small">Difficulty</label><select id="difficulty"><option>Mixed</option><option>Easy</option><option>Average</option><option>Difficult</option></select></div>
+      <div><label class="small">Questions</label><select id="count"><option>10</option><option>20</option><option>30</option><option>50</option><option>100</option></select></div>
+      <div><label class="small">Timer per question</label><select id="timer"><option value="0">No timer</option><option value="15">15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></div>
+    </div>
+
+    <div class="topic-box">
+      <div class="small">Review focus</div>
+      <button id="topicButton" class="topic-btn">📚 Choose a Topic</button>
+      <div id="selectedTopic" class="selected-topic">All Topics</div>
+    </div>
+
+    <div id="topicPanel" class="topic-panel hidden">
+      <div class="topic-panel-head">
+        <div><strong>Choose a Topic to Review</strong><div class="small">Select a BOW-aligned topic, or review everything.</div></div>
+        <button id="closeTopics" class="close-btn">×</button>
+      </div>
+      <div id="topicList" class="topic-list"></div>
+    </div>
+
+    <button id="start" class="btn" style="margin-top:18px;width:100%">Start Review</button>
+    <div id="marathonNote" class="small" style="margin-top:9px;text-align:center"></div>
+  </section>
+
+  <section id="game" class="card hidden">
+    <div class="topbar">
+      <div><span id="round" class="pill"></span> <span id="topicTag" class="pill"></span></div>
+      <div>Question <strong id="num"></strong> / <strong id="total"></strong> <span id="timerBox" class="timer"></span></div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <h2 id="question" style="margin-top:20px"></h2>
+    <div id="choices" class="choices"></div>
+    <div id="rationale" class="rationale hidden"></div>
+    <button id="next" class="btn hidden" style="margin-top:15px">Next Question</button>
+  </section>
+
+  <section id="results" class="card hidden">
+    <h2>Review Complete</h2>
+    <div id="score" class="score"></div>
+    <p id="resultText" class="center"></p>
+    <div id="review"></div>
+    <button id="again" class="btn">Review Again</button>
+    <button id="logout" class="btn danger" style="margin-left:8px">Lock Game</button>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let quiz=[],idx=0,score=0,answered=false,timerId=null,timeLeft=0,results=[],selectedTopic="All Topics";
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function getTopicCounts(){const c={};RAAL_QUESTIONS.forEach(q=>c[q.topic]=(c[q.topic]||0)+1);return c}
+function renderTopics(){
+  const counts=getTopicCounts(),list=$("topicList");list.innerHTML="";
+  const all=document.createElement("button");all.className="topic-choice"+(selectedTopic==="All Topics"?" active":"");
+  all.innerHTML=`All Topics<span class="topic-count">${RAAL_QUESTIONS.length} questions</span>`;
+  all.onclick=()=>chooseTopic("All Topics");list.appendChild(all);
+  Object.keys(counts).sort().forEach(t=>{
+    const b=document.createElement("button");b.className="topic-choice"+(selectedTopic===t?" active":"");
+    b.innerHTML=`${t}<span class="topic-count">${counts[t]} questions</span>`;
+    b.onclick=()=>chooseTopic(t);list.appendChild(b);
+  });
+}
+function chooseTopic(t){selectedTopic=t;$("selectedTopic").textContent=t;$("topicPanel").classList.add("hidden");renderTopics()}
+$("topicButton").onclick=()=>{if($("mode").value==="marathon")return;renderTopics();$("topicPanel").classList.toggle("hidden")}
+$("closeTopics").onclick=()=>$("topicPanel").classList.add("hidden")
+
+function showMenu(){ $("login").classList.add("hidden"); $("results").classList.add("hidden"); $("game").classList.add("hidden"); $("menu").classList.remove("hidden"); renderTopics(); }
+function validCode(code){return RAAL_ACCESS_CODES.includes(code.toUpperCase())}
+$("unlock").onclick=()=>{
+  const code=$("accessInput").value.trim().toUpperCase();
+  if(validCode(code)){localStorage.setItem("raal5science_unlocked","1");$("loginError").textContent="";showMenu()}
+  else $("loginError").textContent="Invalid access code. Please check the code and try again."
+}
+$("accessInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("unlock").click()});
+if(localStorage.getItem("raal5science_unlocked")==="1")showMenu();
+
+$("start").onclick=()=>{
+  const mode=$("mode").value;
+  const d=$("difficulty").value;
+  const n=Number($("count").value);
+  let pool;
+  if(mode==="marathon"){
+    selectedTopic="All Topics";
+    $("selectedTopic").textContent="All Topics";
+    $("difficulty").value="Mixed";
+    pool=[...RAAL_QUESTIONS];
+  }else{
+    pool=RAAL_QUESTIONS.filter(q=>(selectedTopic==="All Topics"||q.topic===selectedTopic)&&(d==="Mixed"||q.difficulty===d));
+  }
+  if(!pool.length){alert("No questions match this topic and difficulty combination.");return}
+  quiz=shuffle(pool).slice(0,mode==="marathon"?pool.length:Math.min(n,pool.length));
+  idx=0;score=0;results=[];
+  $("menu").classList.add("hidden");$("results").classList.add("hidden");$("game").classList.remove("hidden");showQuestion();
+}
+$("mode").onchange=()=>{
+  const marathon=$("mode").value==="marathon";
+  $("marathonNote").textContent=marathon?"Marathon runs through all 600 audited Grade 5 Science questions in one game.":"";
+  $("topicButton").disabled=marathon;
+  $("topicButton").style.opacity=marathon?".55":"1";
+  $("selectedTopic").style.opacity=marathon?".55":"1";
+  if(marathon){selectedTopic="All Topics";$("selectedTopic").textContent="All Topics";$("topicPanel").classList.add("hidden");}
+};
+
+function showQuestion(){
+  clearInterval(timerId);answered=false;timeLeft=Number($("timer").value);
+  const q=quiz[idx],opts=shuffle([
+    {text:q.choice_a,k:"A"},{text:q.choice_b,k:"B"},{text:q.choice_c,k:"C"},{text:q.choice_d,k:"D"}
+  ]);
+  $("num").textContent=idx+1;$("total").textContent=quiz.length;$("bar").style.width=((idx/quiz.length)*100)+"%";
+  $("round").textContent=$("mode").value==="marathon"?"MARATHON":q.quiz_bee_round.toUpperCase();
+  $("topicTag").textContent=(selectedTopic==="All Topics"?q.topic:selectedTopic);
+  $("question").textContent=q.question;$("choices").innerHTML="";$("rationale").classList.add("hidden");$("next").classList.add("hidden");
+  opts.forEach(o=>{const b=document.createElement("button");b.className="choice";b.textContent=o.k+". "+o.text;b.onclick=()=>answer(o.k,b);$("choices").appendChild(b)});
+  updateTimer();
+  if(timeLeft>0)timerId=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0){clearInterval(timerId);if(!answered)answer(null,null)}},1000)
+}
+function updateTimer(){$("timerBox").textContent=timeLeft?` • ${timeLeft}s`:""}
+function answer(key,clicked){
+  if(answered)return;answered=true;clearInterval(timerId);
+  const q=quiz[idx],correct=q.correct_answer;let correctText="";
+  const buttons=[...$("choices").children];
+  buttons.forEach(b=>{const k=b.textContent.slice(0,1);if(k===correct){b.classList.add("correct");correctText=b.textContent.slice(3)}});
+  if(clicked && key===correct){score++;clicked.classList.add("correct")} else if(clicked)clicked.classList.add("wrong");
+  results.push({q,selected:key,correct:key===correct});
+  if($("mode").value==="practice"){
+    $("rationale").innerHTML=`<strong>${key===correct?"Correct!":"Review:"}</strong> ${q.rationale}`;$("rationale").classList.remove("hidden");
+  }
+  $("next").textContent=idx===quiz.length-1?"Finish":"Next Question";$("next").classList.remove("hidden");
+}
+$("next").onclick=()=>{if(idx<quiz.length-1){idx++;showQuestion()}else finish()}
+function finish(){
+  clearInterval(timerId);$("game").classList.add("hidden");$("results").classList.remove("hidden");
+  $("score").textContent=`${score} / ${quiz.length}`;$("resultText").textContent=`${Math.round(score/quiz.length*100)}%`;
+  const box=$("review");box.innerHTML="";
+  results.forEach((r,i)=>{const d=document.createElement("div");d.className="review";d.innerHTML=`<strong>${i+1}. ${r.correct?"✓ Correct":"✗ Incorrect"}</strong><div class="small">${r.q.question}</div><div><strong>Answer:</strong> ${r.q["choice_"+r.q.correct_answer.toLowerCase()]}</div><div class="small">${r.q.rationale}</div>`;box.appendChild(d)})
+}
+$("again").onclick=()=>showMenu();
+$("logout").onclick=()=>{localStorage.removeItem("raal5science_unlocked");location.reload()}
+</script>
+</body>
+</html>
